@@ -28,16 +28,16 @@ Without backend configuration, the app is in demo mode and stores bookings only 
 5. In Project Settings > API, copy the Project URL and anon/public key.
 6. Copy `.env.example` to `.env.local`, set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, then restart the dev server.
 
-Never put the `service_role` key in this app or in GitHub. The browser only uses the anon/public key; database access must be protected by the policies in `supabase/schema.sql`.
+Never put the `service_role` key in this app or in GitHub. The anon/public key is included in the browser app at build time, so storing it as a GitHub secret does not make it private. Database access must be protected by the policies in `supabase/schema.sql`.
 
 ## Deploy to GitHub Pages
 
 1. Create an **empty public or private GitHub repository** (do not add a README or `.gitignore` if you already have this project locally).
 2. Push this project to its `main` branch.
 3. In repository Settings > Pages, choose **GitHub Actions** as the build and deployment source.
-4. In Settings > Secrets and variables > Actions > Variables, add:
+4. In Settings > Secrets and variables > Actions, add:
    - `VITE_SUPABASE_URL` — the Supabase Project URL
-   - `VITE_SUPABASE_ANON_KEY` — the anon/public key (never the service-role key)
+   - `VITE_SUPABASE_ANON_KEY` — the anon/public key (never the service-role key). It may be stored as a repository variable or secret.
 5. Push to `main` or run the “Deploy GlowAtHome to GitHub Pages” workflow manually. GitHub Actions builds and publishes the app. The Pages URL appears in the workflow deployment.
 6. In Supabase Authentication > URL Configuration, set the Site URL to the deployed Pages URL and add that URL to the redirect allow list.
 
