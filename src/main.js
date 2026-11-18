@@ -50,6 +50,16 @@ function saveBookings(bookings) {
   localStorage.setItem("glowathome_bookings", JSON.stringify(bookings));
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
 async function syncBookingToCloud(booking) {
   if (!supabase) return;
   const { error } = await supabase.from("bookings").insert(booking);
@@ -70,7 +80,7 @@ async function syncBookingsFromCloud() {
       .select("*")
       .order("booking_date", { ascending: true });
     if (error) {
-      state.adminError = "Could not load bookings from Supabase. Check your table policies and connection.";
+      state.adminError = `Supabase error${error.code ? ` (${error.code})` : ""}: ${error.message}`;
       console.error("Cloud booking fetch failed:", error);
       render();
     } else if (data) {
@@ -382,7 +392,7 @@ function adminDashboard() {
             </article>`).join("")}
         </div>` : `
         <div class="empty-state"><div>✓</div><h3>Queue is clear</h3><p>New customer appointments will appear here.</p></div>`}
-      ${state.adminError ? `<p class="form-error" role="alert">${state.adminError}</p>` : ""}
+      ${state.adminError ? `<p class="form-error" role="alert">${escapeHtml(state.adminError)}</p>` : ""}
     </main>
     ${bottomNav()}
   `;
